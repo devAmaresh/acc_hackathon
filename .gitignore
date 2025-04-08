@@ -2,3 +2,4 @@
 /myvenv
 /__pycache__/
 **/__pycache__/
+/backend/jobs.db
