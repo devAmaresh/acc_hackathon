@@ -1,10 +1,11 @@
 from fastapi import APIRouter, Depends, Body
-from sqlmodel import Session
+from sqlmodel import Session, select
 from models.job_description import JobDescription
 from schemas.job_description import JobDescriptionCreate
 from database import get_session
 from fastapi import Form,HTTPException
 from agents.matching_agent import store_job_embedding
+
 
 router = APIRouter(prefix="/jobs", tags=["Jobs"])
 
@@ -40,3 +41,13 @@ def add_job_description(
     except Exception as e:
         session.rollback()
         raise HTTPException(status_code=500, detail=f"Failed to add job: {str(e)}")
+
+
+#get all jobs
+@router.get("/all")
+def get_all_jobs(session: Session = Depends(get_session)):
+    try:
+        jobs = session.exec(select(JobDescription)).all()
+        return jobs
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to retrieve jobs: {str(e)}")

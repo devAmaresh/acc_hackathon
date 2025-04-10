@@ -1,60 +1,82 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { useJobDescription } from "@/hooks/use-job-description"
-import { AppBar } from "@/components/app-bar"
-import { ResumeUpload } from "@/components/resume-upload"
-import { JobDescriptionDisplay } from "@/components/job-description-display"
-import { ReviewResults } from "@/components/review-results"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+import { use, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useJobDescription } from "@/hooks/use-job-description";
+import { AppBar } from "@/components/app-bar";
+import { ResumeUpload } from "@/components/resume-upload";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import axios from "axios";
+import { BACKEND_URL } from "@/utils/backend";
+import { CandidateProfile } from "./candidateProfile";
 
 export type ReviewResultType = {
-  matchPercentage: number
-  keywordsMatched: string[]
-  suggestions: string[]
-}
+  matchPercentage: number;
+  keywordsMatched: string[];
+  suggestions: string[];
+};
 
+type Candidate = {
+  id: number;
+  name: string;
+  email: string;
+  skills?: string;
+  experience?: string;
+  education?: string;
+  resume_text: string;
+};
 export function ResumeReviewer() {
-  const router = useRouter()
-  const { jobDescription } = useJobDescription()
-  const [file, setFile] = useState<File | null>(null)
-  const [reviewResults, setReviewResults] = useState<ReviewResultType | null>(null)
-  const [isAnalyzing, setIsAnalyzing] = useState(false)
+  const router = useRouter();
+  const { jobDescription } = useJobDescription();
+  const [file, setFile] = useState<File | null>(null);
+
+  const [reviewResults, setReviewResults] = useState<Candidate>();
+
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const handleFileUpload = (uploadedFile: File) => {
-    setFile(uploadedFile)
-    setReviewResults(null)
-  }
+    setFile(uploadedFile);
+  };
 
-  const handleAnalyzeResume = () => {
-    if (!file) return
+  const handleAnalyzeResume = async () => {
+    if (!file) return;
 
-    setIsAnalyzing(true)
+    try {
+      setIsAnalyzing(true);
+      const formData = new FormData();
+      formData.append("file", file);
+      const response = await axios.post(
+        `${BACKEND_URL}/candidates/add`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      console.log("Resume analysis response:", response.data.candidate);
+      setReviewResults(response.data.candidate);
+    } catch (error) {
+      console.error("Error analyzing resume:", error);
+    } finally {
+      setIsAnalyzing(false);
+    }
 
     // Simulate API call with timeout
-    setTimeout(() => {
-      // Dummy review results
-      const results: ReviewResultType = {
-        matchPercentage: 78,
-        keywordsMatched: ["React", "TypeScript", "REST APIs", "UI/UX", "Frontend Development"],
-        suggestions: [
-          "Include more action verbs in experience section.",
-          'Mention specific achievements (e.g., "Reduced load time by 40%").',
-          "Add more quantifiable metrics to demonstrate impact.",
-          "Consider adding a skills section with technical competencies.",
-        ],
-      }
+  };
 
-      setReviewResults(results)
-      setIsAnalyzing(false)
-    }, 2000)
-  }
-
-  const navigateToJobDescription = () => {
-    router.push("/job-description")
-  }
+  const navigateToUserProfile = () => {
+    router.push(`/candidates/${reviewResults?.id}`);
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -70,23 +92,26 @@ export function ResumeReviewer() {
 
                 {file && (
                   <div className="mt-4">
-                    <Button onClick={handleAnalyzeResume} disabled={isAnalyzing} className="w-full">
+                    <Button
+                      onClick={handleAnalyzeResume}
+                      disabled={isAnalyzing}
+                      className="w-full"
+                    >
                       {isAnalyzing ? "Analyzing..." : "Analyze Resume"}
                     </Button>
+                    {reviewResults && (
+                      <center>
+                        <Button
+                          onClick={navigateToUserProfile}
+                          className="w-1/2 mt-4"
+                          variant="outline"
+                        >
+                          Go to Profile
+                        </Button>
+                      </center>
+                    )}
                   </div>
                 )}
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-2xl font-bold">Job Description</h2>
-                  <Button variant="outline" onClick={navigateToJobDescription}>
-                    Edit
-                  </Button>
-                </div>
-                <JobDescriptionDisplay jobDescription={jobDescription} />
               </CardContent>
             </Card>
           </div>
@@ -94,9 +119,9 @@ export function ResumeReviewer() {
           <div>
             <Card className="h-full">
               <CardContent className="pt-6">
-                <h2 className="text-2xl font-bold mb-4">Review Results</h2>
+                <h2 className="text-2xl font-bold mb-4">Parsed Content</h2>
                 {reviewResults ? (
-                  <ReviewResults results={reviewResults} />
+                  <CandidateProfile candidate={reviewResults} />
                 ) : (
                   <div className="flex flex-col items-center justify-center h-64 text-center text-muted-foreground">
                     <p>Upload your resume and analyze it to see the results</p>
@@ -108,5 +133,5 @@ export function ResumeReviewer() {
         </div>
       </main>
     </div>
-  )
+  );
 }

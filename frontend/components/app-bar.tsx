@@ -1,15 +1,20 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { FileText, Moon, Sun } from "lucide-react"
-import { useTheme } from "next-themes"
-import { Button } from "@/components/ui/button"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { FileText, Moon, Sun } from "lucide-react";
+import { useTheme } from "next-themes";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function AppBar() {
-  const { setTheme } = useTheme()
-  const pathname = usePathname()
+  const { setTheme } = useTheme();
+  const pathname = usePathname();
 
   return (
     <header className="border-b">
@@ -23,7 +28,9 @@ export function AppBar() {
           <Link
             href="/"
             className={
-              pathname === "/" ? "font-medium" : "text-muted-foreground hover:text-foreground transition-colors"
+              pathname === "/"
+                ? "font-medium"
+                : "text-muted-foreground hover:text-foreground transition-colors"
             }
           >
             Resume Review
@@ -38,6 +45,16 @@ export function AppBar() {
           >
             Job Description
           </Link>
+          <Link
+            href="/candidates"
+            className={
+              pathname.startsWith("/candidates")
+                ? "font-medium"
+                : "text-muted-foreground hover:text-foreground transition-colors"
+            }
+          >
+            Candidates
+          </Link>
         </nav>
 
         <div className="flex items-center space-x-2">
@@ -50,13 +67,19 @@ export function AppBar() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => setTheme("light")}>Light</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setTheme("dark")}>Dark</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setTheme("system")}>System</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTheme("light")}>
+                Light
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTheme("dark")}>
+                Dark
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTheme("system")}>
+                System
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
       </div>
     </header>
-  )
+  );
 }
