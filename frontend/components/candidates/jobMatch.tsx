@@ -98,13 +98,19 @@ const jobMatch = () => {
             <Input
               placeholder="Search Jobs"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => {
+                setSimilarityScore(null);
+                setSearchTerm(e.target.value);
+              }}
             />
             <div className="space-y-2 max-h-[70vh] overflow-y-auto border rounded-md p-2">
               {filteredJobs.map((job) => (
                 <div
                   key={job.id}
-                  onClick={() => setSelectedJob(job)}
+                  onClick={() => {
+                    setSimilarityScore(null);
+                    setSelectedJob(job);
+                  }}
                   className={`p-2 rounded-md cursor-pointer hover:bg-muted transition ${
                     selectedJob?.id === job.id
                       ? "bg-neutral-200 dark:bg-neutral-800"
@@ -147,7 +153,7 @@ const jobMatch = () => {
                       similarityScore
                     )}`}
                   >
-                    Score: {similarityScore}%
+                    Score: {similarityScore.toFixed(2)}%
                   </div>
                 </div>
               )}
