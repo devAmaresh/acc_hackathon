@@ -1,5 +1,5 @@
 # Accenture Hackathon Submission  
-## 🧠 Use Case 7 - Problem Statement 5: Enhancing Job Screening with AI and Data Intelligence  
+## 🧠 Problem Statement 5: Enhancing Job Screening with AI and Data Intelligence  
 
 ### 🚀 Team: `EK_AUR`  
 
