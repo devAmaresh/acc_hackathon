@@ -42,7 +42,7 @@ The traditional recruitment process is time-consuming, error-prone, and ineffici
 
 ## ↺ Flowchart  
 
-![System Flowchart](./problem_statement.png)
+![System Flowchart](./flowchart.png)
 
 ---
 
